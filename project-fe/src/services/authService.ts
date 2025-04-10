@@ -2,7 +2,7 @@ import { LoginUser, RegisterUser } from "../models/User";
 import API from "./api";
 
 export const register = async (data: RegisterUser) => {
-    const response = await API.post("/register", data);
+    const response = await API.post("/sign-in", data);
     return response.data;
 };
 
