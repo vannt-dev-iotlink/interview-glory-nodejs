@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import InputField from "../components/InputField";
 import { LoginUser } from "../models/User";
+import { login } from "../services/authService";
 
 const Login = () => {
     const [form, setForm] = useState<LoginUser>({ phone: "", password: "" });
@@ -10,9 +11,15 @@ const Login = () => {
         setForm({ ...form, [e?.target.name]: e?.target.value });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("Logging in with:", form);
+        try {
+            const { token, user } = await login(form);
+            localStorage.setItem("token", token);
+            alert(`Chào mừng ${user.firstName}!`);
+        } catch (error: any) {
+            alert(error.response?.data?.message || "Đăng nhập thất bại");
+        }
     };
 
     return (
@@ -24,13 +31,13 @@ const Login = () => {
                 <h2 className="text-2xl font-bold mb-6 text-center">Đăng nhập</h2>
 
                 <InputField
-                    label="Số điện thoại"
+                    label="Phone"
                     name="phone"
                     value={form.phone}
                     onChange={handleChange}
                 />
                 <InputField
-                    label="Mật khẩu"
+                    label="Password"
                     type="password"
                     name="password"
                     value={form.password}

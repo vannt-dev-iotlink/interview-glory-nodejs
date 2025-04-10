@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import InputField from "../components/InputField";
 import { RegisterUser } from "../models/User";
+import { register } from "../services/authService";
 
 const Register = () => {
     const [form, setForm] = useState<RegisterUser>({
@@ -16,13 +17,19 @@ const Register = () => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (form.password !== form.confirmPassword) {
             alert("Mật khẩu không trùng");
             return;
         }
-        console.log("Đăng ký user:", form);
+        try {
+            const { token } = await register(form);
+            localStorage.setItem("token", token);
+            alert("Đăng ký thành công!");
+        } catch (error: any) {
+            alert(error.response?.data?.message || "Đăng ký thất bại");
+        }
     };
 
     return (
@@ -31,7 +38,7 @@ const Register = () => {
                 onSubmit={handleSubmit}
                 className="bg-white p-8 rounded shadow-md w-full max-w-md"
             >
-                <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
+                <h2 className="text-2xl font-bold mb-6 text-center">Đăng ký</h2>
 
                 <InputField
                     label="First Name"
